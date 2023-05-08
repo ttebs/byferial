@@ -1,0 +1,66 @@
+
+/* Callouts
+---------------------------------------*/
+
+.fl-module-callout .fl-photo-content {
+    position: relative;
+    overflow: hidden;
+    max-height: 700px;
+    display: -webkit-flex;
+    display: -moz-flex;
+    display: -ms-flex;
+    display: -o-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-flex-direction: column;
+    -moz-flex-direction: column;
+    -ms-flex-direction: column;
+    -o-flex-direction: column;
+    flex-direction: column;
+    -webkit-justify-direction: column;
+    -moz-justify-content: center;
+    -ms-justify-content: center;
+    -o-justify-content: center;
+    -webkit-justify-content: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+}
+
+.fl-module-callout .fl-photo-content img {
+    width: 100%;
+    min-width: 100%;
+    height: auto;
+    transition: all .3s ease-in-out;
+    margin-bottom: 0;
+}
+
+.fl-module-callout .fl-photo-content:hover img {
+    -webkit-transform: translate3d(0,0,0) scale(1.1,1.1);
+    transform: translate3d(0,0,0) scale(1.1,1.1)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

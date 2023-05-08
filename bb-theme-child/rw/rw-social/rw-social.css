@@ -1,0 +1,69 @@
+.rw-social-icons {
+    clear: both;
+    overflow: hidden;
+    margin: 0;
+    padding:0;
+    float:right;
+}
+
+.rw-social-icons li {
+    float: left
+}
+
+.rw-social-icons li a .fa {
+    display: block;
+    width: 50px;
+    height: 50px;
+    margin: 0 10px 0 0;
+    border: 2px solid #FFF;
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+    font: normal normal normal 24px/1 FontAwesome;
+    text-align: center;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased
+}
+
+.rw-social-icons li a .fa:hover {
+    border: 2px solid #97D029;
+}
+
+.rw-social-icons li a .fa:before {
+    color: #FFF;
+    position: relative;
+    top: 10px
+}
+
+.rw-social-icons li a:hover {
+    text-decoration: none;
+    color: #97D029;
+}
+
+.rw-social-icons li a:hover .fa:before {
+    color: #97D029;
+}
+
+.fa-facebook-f:before {
+    content: "\f09a";
+    left:3px;
+}
+
+.fa-twitter:before {
+    content: "\f099"
+}
+
+.fa-google-plus:before {
+    content: "\f0d5"
+}
+
+.fa-linkedin:before {
+    content: "\f0e1"
+}
+
+.fa-instagram:before {
+    content: "\f16d"
+}
+
+.fa-youtube:before {
+    content: "\f167"
+}
