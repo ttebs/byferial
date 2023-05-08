@@ -1466,6 +1466,34 @@ function get_active_members_for_membership($country) {
 }
 
 
+function get_active_members_for_membership_default() {
+    
+    global $wpdb;
+
+    // Getting all User IDs and data for a membership plan
+    //SELECT DISTINCT um.user_id, u.user_email, u.display_name, u.user_nicename, p2.post_title, p2.post_type 
+	$sql = 	$wpdb->prepare(
+			"SELECT DISTINCT u.id, um.user_id, u.user_nicename 
+			FROM {$wpdb->prefix}posts AS p
+			LEFT JOIN {$wpdb->prefix}posts AS p2 ON p2.ID = p.post_parent
+			LEFT JOIN {$wpdb->prefix}users AS u ON u.id = p.post_author
+			LEFT JOIN {$wpdb->prefix}usermeta AS um ON u.id = um.user_id
+			WHERE p.post_type = 'wc_user_membership'
+			AND p.post_status IN ('wcm-active')
+			AND p2.post_type = 'wc_membership_plan'
+			AND p2.post_name IN ('empower-member', 'empower-consultant', 'empower-professional', 'empower-master')
+			AND um.meta_key = 'consultant_country'
+			ORDER BY um.meta_value ASC");
+	
+	$result = $wpdb->get_results($sql);
+			    
+	//echo '<pre>'; print_r( $result ); echo '</pre>';
+	
+	return $result;
+
+}
+
+
 
 // --------------------------------------------------- //
 // Directory Profile Form Processing

@@ -79,8 +79,3 @@ function rw_widgets_init() {
 }
 add_action( 'widgets_init', 'rw_widgets_init' );
  */
-
-
-
-
-

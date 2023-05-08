@@ -868,14 +868,19 @@ ul.rw-5-columns li {
     font-size: 12px;
 }
 
-
-
-
-
-
-
-
-
-
-
-
+/* consultant directory */
+.consultant-directory__form {
+	margin-bottom: 20px;
+    text-align: right;
+}
+.consultant-directory__form select {
+	border: 1px solid rgba(0,0,0,.125);
+    padding: 13px 30px 13px 9px;
+    border-radius: 6px;
+}
+.consultant-directory__form input[type="submit"] {
+	background: #cc403f;
+    padding: 12px 24px;
+    border-radius: 3px;
+    border: none;
+}

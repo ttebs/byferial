@@ -14,6 +14,13 @@ function rw_consultant_directory_shortcode( $atts ) {
 		$atts,
 		'rw-consultant-directory'
 	);
+
+
+	// var_dump($_GET['filter_country']);
+
+	// var_dump($states_arr);
+
+	// $memberships = wc_memberships_get_user_active_memberships( $consultant->user_id );	
 	
 	if ( get_query_var('consultant') && (get_query_var('consultant') !== "") ) {
 	
@@ -105,12 +112,56 @@ function rw_consultant_directory_shortcode( $atts ) {
 		<?php
 
 	} else {
+		// filters form
+		$directory_filters = get_directory_filters();
+		$params_country = $_GET['filter_country'];
+		$params_states = $_GET['filter_states'];
+
+		if($params_country !== "United States") $params_states = "";
+		?>
+			<form action="" method="get" class="consultant-directory__form">
+				<select name="filter_country" id="filter_country">
+					<option value="">All countries</option>
+		<?php
+					foreach($directory_filters['country'] as $filter_country){
+						$selected = "";
+						if($params_country == $filter_country) $selected = "selected";
+						?>
+							<option value="<?php echo $filter_country; ?>" <?php echo $selected; ?>><?php echo $filter_country; ?></option>
+						<?php
+					}
+		?>
+				</select>
+		<?php
+			if($params_country == "United States"){
+		?>
+				<select name="filter_states" id="filter_states">
+					<option value="">All States</option>
+		<?php
+					foreach($directory_filters['states'] as $filter_state){
+						$selected = "";
+						if($params_states == $filter_state) $selected = "selected";
+						?>
+							<option value="<?php echo $filter_state; ?>" <?php echo $selected; ?>><?php echo $filter_state; ?></option>
+						<?php
+					}
+		?>
+				</select>
+		<?php
+			}
+		?>
+				<input type="submit" value="Search">
+			</form> 
+		<?php
 	
 		// Replace 'My Membership' by your targeted membership name.
 		$member_countries = get_active_member_countries();
+		// echo '<pre>' , var_dump($member_countries) , '</pre>';
+		// die("here");
 	
 		// Test raw output
 		//echo '<pre>'; print_r( $member_countries ); echo '</pre>';
+		
 		
 		?>
 		
@@ -121,26 +172,21 @@ function rw_consultant_directory_shortcode( $atts ) {
 		$i = 0;
 		
 		// Loop through active subscribers
-	    foreach ( $member_countries as $country ) {
+	    // foreach ( $member_countries as $country ) {
 			
 			//echo '<pre>'; print_r( $country ); echo '</pre>';
 			?>
 	
 			<div class="card">
-				<div class="card-header" id="heading<?php echo $i; ?>">
-					<h2 class="mb-0">
-						<button class="btn btn-link" data-toggle="collapse" data-target="#collapse<?php echo $i; ?>" aria-expanded="true" aria-controls="collapse<?php echo $i; ?>">
-						<?php echo $country->meta_value; ?>
-						</button>
-					</h2>
-				</div><!--End .card-header -->
-				<div id="collapse<?php echo $i; ?>" class="collapse<?php if ($i == 0) : echo " show"; endif; ?>" aria-labelledby="heading<?php echo $i; ?>" data-parent="#accordion">
 					<div class="card-body">
 					<?php
 					
 					// This function get_active_members_for_membership is in rw-fsg/create-consultant-client.php
 					// It returns a list of members with status active or pending cancellation
-					$consultant_data = get_active_members_for_membership($country->meta_value);
+					// $consultant_data = get_active_members_for_membership($country->meta_value);
+
+					if($params_country) $consultant_data = get_active_members_for_membership($params_country);
+					else $consultant_data = get_active_members_for_membership_default();
 					
 					/*
 					if (current_user_can('administrator')) {
@@ -153,12 +199,17 @@ function rw_consultant_directory_shortcode( $atts ) {
 					*/
 					
 					$consultants_order = array();
+					$consultants_order_master = array();
+					$consultants_order_professional = array();
+					$consultants_order_consultant = array();
+					$consultants_order_member = array();
 					
 					foreach ( $consultant_data as $consultant ) {
 						
 						// For each consultant get list of active memberships
 						// This is a built in WC function and returns both active and pending cancellation
-						$memberships = wc_memberships_get_user_active_memberships( $consultant->user_id );						
+						$memberships = wc_memberships_get_user_active_memberships( $consultant->user_id );	
+										
 						
 						$allowed_memberships = array( 'empower-member', 'empower-consultant', 'empower-professional', 'empower-master' );
 						
@@ -183,6 +234,47 @@ function rw_consultant_directory_shortcode( $atts ) {
 							//echo "</pre>";
 							
 						}
+					
+						switch ($qualified_plan) {
+							case 'empower-master':
+								$consultants_order_master[$consultant->user_id] = array(
+									'user_id' => $consultant->user_id,
+									'consultant_name' => get_field('consultant_name', 'user_' . $consultant->user_id),
+									'user_nicename' => $consultant->user_nicename,
+									'membership_plan' => $qualified_plan,
+									'membership_order' => $membership_order,
+								);
+								break;
+							case 'empower-professional':
+								$consultants_order_professional[$consultant->user_id] = array(
+									'user_id' => $consultant->user_id,
+									'consultant_name' => get_field('consultant_name', 'user_' . $consultant->user_id),
+									'user_nicename' => $consultant->user_nicename,
+									'membership_plan' => $qualified_plan,
+									'membership_order' => $membership_order,
+								);
+								break;
+							case 'empower-consultant':
+								$consultants_order_consultant[$consultant->user_id] = array(
+									'user_id' => $consultant->user_id,
+									'consultant_name' => get_field('consultant_name', 'user_' . $consultant->user_id),
+									'user_nicename' => $consultant->user_nicename,
+									'membership_plan' => $qualified_plan,
+									'membership_order' => $membership_order,
+								);
+								break;
+							case 'empower-member':
+								$consultants_order_member[$consultant->user_id] = array(
+									'user_id' => $consultant->user_id,
+									'consultant_name' => get_field('consultant_name', 'user_' . $consultant->user_id),
+									'user_nicename' => $consultant->user_nicename,
+									'membership_plan' => $qualified_plan,
+									'membership_order' => $membership_order,
+								);
+								break;
+							default:
+								break;
+						}
 
 						$consultants_order[$consultant->user_id] = array(
 							'user_id' => $consultant->user_id,
@@ -193,15 +285,30 @@ function rw_consultant_directory_shortcode( $atts ) {
 						);
 						
 					}
+
+					uasort($consultants_order_master, fn($a, $b) => $a['consultant_name'] <=> $b['consultant_name']);
+					uasort($consultants_order_professional, fn($a, $b) => $a['consultant_name'] <=> $b['consultant_name']);
+					uasort($consultants_order_consultant, fn($a, $b) => $a['consultant_name'] <=> $b['consultant_name']);
+					uasort($consultants_order_member, fn($a, $b) => $a['consultant_name'] <=> $b['consultant_name']);
+
+					$final_consultant_list = $consultants_order_master + $consultants_order_professional + $consultants_order_consultant + $consultants_order_member;
+
+					// echo "<pre>";
+					// print_r($final_consultant_list);
+					// echo "</pre>";
+					// die("here");
+
+					// foreach ( $consultants_order as $consultant ) {
+					// 	if()
+					// }
 					
 					
-					
-					array_multisort( array_column($consultants_order, "membership_order"), SORT_ASC, $consultants_order );
+					// array_multisort( array_column($consultants_order, "membership_order"), SORT_ASC, $consultants_order );
 
 					//echo '<pre>'; print_r( $consultant_data ); echo '</pre>';
 					// empower-consultant = 8459, empower-professional = 8460, empower-master = 8461";
 			
-					foreach ( $consultants_order as $consultant ) {
+					foreach ( $final_consultant_list as $consultant ) {
 				
 						// Only show consultants with empower memberships
 						$allowed_memberships = array( 'empower-member', 'empower-consultant', 'empower-professional', 'empower-master' );
@@ -219,8 +326,15 @@ function rw_consultant_directory_shortcode( $atts ) {
 							$consultant_website = get_field('consultant_website', 'user_' . $consultant['user_id']);
 							$consultant_profile_image = get_field('consultant_profile_image', 'user_' . $consultant['user_id']);
 							
-							//$current_membership = wc_memberships_get_user_active_memberships($consultant->user_id);
+							if($params_states && $params_states !== $consultant_state__province){
+								continue;
+							}
+
 							
+						// 	echo "<pre>";
+						// print_r($consultant_state__province);
+						// echo "</pre>";
+							//$current_membership = wc_memberships_get_user_active_memberships($consultant->user_id);
 							if ($show_my_listing == "Yes") {
 							?>
 							
@@ -241,7 +355,7 @@ function rw_consultant_directory_shortcode( $atts ) {
 											switch ($consultant['membership_plan']) {
 												
 												case "empower-member":
-													echo '<img class="size-thumbnail wp-image-9510" src="https://byferial.com/wp-content/uploads/2020/07/empower-member-logo-150x150.png" alt="empower member" width="150" height="150" />';
+													echo '<img class="size-thumbnail wp-image-9510" src="https://byferial.com/wp-content/uploads/2023/03/Social-Member-Logo.png" alt="empower member" width="150" height="150" />';
 													break;
 												case "empower-consultant":
 													echo '<img class="size-thumbnail wp-image-9508" src="https://byferial.com/wp-content/uploads/2020/07/empower-consultant-logo-150x150.png" alt="empower consultant" width="150" height="150" />';
@@ -250,7 +364,7 @@ function rw_consultant_directory_shortcode( $atts ) {
 													echo '<img class="size-thumbnail wp-image-9511" src="https://byferial.com/wp-content/uploads/2020/07/empower-professional-logo-150x150.png" alt="empower professional" width="150" height="150" />';
 													break;
 												case "empower-master":										
-													echo '<img class="size-thumbnail wp-image-9509" src="https://byferial.com/wp-content/uploads/2020/07/empower-master-logo-150x150.png" alt="empower master" width="150" height="150" />';
+													echo '<img class="size-thumbnail wp-image-9509" src="https://byferial.com/wp-content/uploads/2023/03/Ambassador-Logo.png" alt="empower master" width="150" height="150" />';
 													break;
 													
 											}
@@ -298,14 +412,13 @@ function rw_consultant_directory_shortcode( $atts ) {
 					} // foreach ( $consultants_order as $consultant ) {
 					?>
 					</div><!--End .card-body -->
-				</div><!--End .collapse -->
 			</div><!--End .card -->
 		
 			<?php
 			
 			$i++;
 			
-			} // end foreach ( $member_countries as $country ) {
+			// } // end foreach ( $member_countries as $country ) {
 			
 			?>
 		
