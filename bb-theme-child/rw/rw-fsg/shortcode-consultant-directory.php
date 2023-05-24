@@ -14,13 +14,6 @@ function rw_consultant_directory_shortcode( $atts ) {
 		$atts,
 		'rw-consultant-directory'
 	);
-
-
-	// var_dump($_GET['filter_country']);
-
-	// var_dump($states_arr);
-
-	// $memberships = wc_memberships_get_user_active_memberships( $consultant->user_id );	
 	
 	if ( get_query_var('consultant') && (get_query_var('consultant') !== "") ) {
 	
@@ -31,10 +24,6 @@ function rw_consultant_directory_shortcode( $atts ) {
 		$consultant = get_user_by( 'slug' , $rw_consultant_slug );
 		
 		//echo "SLUG: " . $rw_consultant_slug;
-		
-		//echo "<pre>";
-		//print_r($consultant);
-		//echo "</pre>";
 		
 		$consultant_name = get_field('consultant_name', 'user_' . $consultant->ID);
 		$consultant_company = get_field('consultant_company', 'user_' . $consultant->ID);
@@ -89,18 +78,29 @@ function rw_consultant_directory_shortcode( $atts ) {
 				<div class="rw-consultant-badge">
 					<?php 
 					switch ($membership_plan) {
-						
+						case "certified-master-image-coach":
+							echo '<img class="size-thumbnail wp-image-9510" src="https://byferial.com/wp-content/uploads/2023/05/Certified-Master-Image-Coach-Logo.png" alt="empower member" width="150" height="150" />';
+							break;
+						case "certified-professional-image-consultant":
+							echo '<img class="size-thumbnail wp-image-9510" src="https://byferial.com/wp-content/uploads/2023/05/Certified-Professional-Image-Consultant-Logo.png" alt="empower member" width="150" height="150" />';
+							break;
+						case "certified-image-consultant":
+							echo '<img class="size-thumbnail wp-image-9510" src="https://byferial.com/wp-content/uploads/2023/05/Certified-4X4-Color-Consultant.png" alt="empower member" width="150" height="150" />';
+							break;
+						case "certified-4x4-color-consultant":
+							echo '<img class="size-thumbnail wp-image-9510" src="https://byferial.com/wp-content/uploads/2023/05/4X4-Color-Consultant-Logo.png" alt="empower member" width="150" height="150" />';
+							break;
 						case "empower-member":
-							echo '<img class="size-thumbnail wp-image-9510" src="https://byferial.com/wp-content/uploads/2020/07/empower-member-logo-150x150.png" alt="empower member" width="150" height="150" />';
+							echo '<img class="size-thumbnail wp-image-9510" src="https://byferial.com/wp-content/uploads/2023/03/Social-Member-Logo.png" alt="empower member" width="150" height="150" />';
 							break;
 						case "empower-consultant":
-							echo '<img class="size-thumbnail wp-image-9508" src="https://byferial.com/wp-content/uploads/2020/07/empower-consultant-logo-150x150.png" alt="empower consultant" width="150" height="150" />';
+							echo '<img class="size-thumbnail wp-image-9508" src="https://byferial.com/wp-content/uploads/2023/02/Elite-Member-Logo.png" alt="empower consultant" width="150" height="150" />';
 							break;
 						case "empower-professional":
-							echo '<img class="size-thumbnail wp-image-9511" src="https://byferial.com/wp-content/uploads/2020/07/empower-professional-logo-150x150.png" alt="empower professional" width="150" height="150" />';
+							echo '<img class="size-thumbnail wp-image-9511" src="https://byferial.com/wp-content/uploads/2023/02/Skilled-Member-Logo.png" alt="empower professional" width="150" height="150" />';
 							break;
 						case "empower-master":										
-							echo '<img class="size-thumbnail wp-image-9509" src="https://byferial.com/wp-content/uploads/2020/07/empower-master-logo-150x150.png" alt="empower master" width="150" height="150" />';
+							echo '<img class="size-thumbnail wp-image-9509" src="https://byferial.com/wp-content/uploads/2023/03/Ambassador-Logo.png" alt="empower master" width="150" height="150" />';
 							break;
 							
 					}
@@ -156,8 +156,6 @@ function rw_consultant_directory_shortcode( $atts ) {
 	
 		// Replace 'My Membership' by your targeted membership name.
 		$member_countries = get_active_member_countries();
-		// echo '<pre>' , var_dump($member_countries) , '</pre>';
-		// die("here");
 	
 		// Test raw output
 		//echo '<pre>'; print_r( $member_countries ); echo '</pre>';
@@ -171,10 +169,6 @@ function rw_consultant_directory_shortcode( $atts ) {
 			
 		$i = 0;
 		
-		// Loop through active subscribers
-	    // foreach ( $member_countries as $country ) {
-			
-			//echo '<pre>'; print_r( $country ); echo '</pre>';
 			?>
 	
 			<div class="card">
@@ -199,6 +193,10 @@ function rw_consultant_directory_shortcode( $atts ) {
 					*/
 					
 					$consultants_order = array();
+					$consultants_order_coach = array();
+					$consultants_order_professional_image_consultant= array();
+					$consultants_order_certified_image_consultant = array();
+					$consultants_order_4x4 = array();
 					$consultants_order_master = array();
 					$consultants_order_professional = array();
 					$consultants_order_consultant = array();
@@ -211,19 +209,17 @@ function rw_consultant_directory_shortcode( $atts ) {
 						$memberships = wc_memberships_get_user_active_memberships( $consultant->user_id );	
 										
 						
-						$allowed_memberships = array( 'empower-member', 'empower-consultant', 'empower-professional', 'empower-master' );
+						$allowed_memberships = array( 'certified-master-image-coach','certified-professional-image-consultant','certified-image-consultant','certified-4x4-color-consultant','empower-member', 'empower-consultant', 'empower-professional', 'empower-master' );
 						
 						// Loop through all membership plans a customer has and
 						// store as a variable only ones which match an allowed membership
 						foreach ( $memberships as $membership ) {
-							
 							if ( in_array($membership->plan->slug, $allowed_memberships, true ) ) {
 								
 								$qualified_plan = $membership->plan->post->post_name;
 								$membership_order = $membership->plan->post->menu_order;
 							
 							}
-							
 						}
 						
 						if (current_user_can('administrator')) {
@@ -234,8 +230,44 @@ function rw_consultant_directory_shortcode( $atts ) {
 							//echo "</pre>";
 							
 						}
-					
+						// var_dump($qualified_plan);
 						switch ($qualified_plan) {
+							case 'certified-master-image-coach':
+								$consultants_order_coach[$consultant->user_id] = array(
+									'user_id' => $consultant->user_id,
+									'consultant_name' => get_field('consultant_name', 'user_' . $consultant->user_id),
+									'user_nicename' => $consultant->user_nicename,
+									'membership_plan' => $qualified_plan,
+									'membership_order' => $membership_order,
+								);
+								break;
+							case 'certified-professional-image-consultant':
+								$consultants_order_professional_image_consultant[$consultant->user_id] = array(
+									'user_id' => $consultant->user_id,
+									'consultant_name' => get_field('consultant_name', 'user_' . $consultant->user_id),
+									'user_nicename' => $consultant->user_nicename,
+									'membership_plan' => $qualified_plan,
+									'membership_order' => $membership_order,
+								);
+								break;
+							case 'certified-image-consultant':
+								$consultants_order_certified_image_consultant[$consultant->user_id] = array(
+									'user_id' => $consultant->user_id,
+									'consultant_name' => get_field('consultant_name', 'user_' . $consultant->user_id),
+									'user_nicename' => $consultant->user_nicename,
+									'membership_plan' => $qualified_plan,
+									'membership_order' => $membership_order,
+								);
+								break;
+							case 'certified-4x4-color-consultant':
+								$consultants_order_4x4[$consultant->user_id] = array(
+									'user_id' => $consultant->user_id,
+									'consultant_name' => get_field('consultant_name', 'user_' . $consultant->user_id),
+									'user_nicename' => $consultant->user_nicename,
+									'membership_plan' => $qualified_plan,
+									'membership_order' => $membership_order,
+								);
+								break;
 							case 'empower-master':
 								$consultants_order_master[$consultant->user_id] = array(
 									'user_id' => $consultant->user_id,
@@ -286,32 +318,24 @@ function rw_consultant_directory_shortcode( $atts ) {
 						
 					}
 
+					uasort($consultants_order_coach, fn($a, $b) => $a['consultant_name'] <=> $b['consultant_name']);
+					uasort($consultants_order_professional_image_consultant, fn($a, $b) => $a['consultant_name'] <=> $b['consultant_name']);
+					uasort($consultants_order_certified_image_consultant, fn($a, $b) => $a['consultant_name'] <=> $b['consultant_name']);
+					uasort($consultants_order_4x4, fn($a, $b) => $a['consultant_name'] <=> $b['consultant_name']);
+
 					uasort($consultants_order_master, fn($a, $b) => $a['consultant_name'] <=> $b['consultant_name']);
 					uasort($consultants_order_professional, fn($a, $b) => $a['consultant_name'] <=> $b['consultant_name']);
 					uasort($consultants_order_consultant, fn($a, $b) => $a['consultant_name'] <=> $b['consultant_name']);
 					uasort($consultants_order_member, fn($a, $b) => $a['consultant_name'] <=> $b['consultant_name']);
 
-					$final_consultant_list = $consultants_order_master + $consultants_order_professional + $consultants_order_consultant + $consultants_order_member;
+					$final_consultant_list = $consultants_order_coach + $consultants_order_professional_image_consultant + $consultants_order_certified_image_consultant + $consultants_order_4x4 + $consultants_order_master + $consultants_order_professional + $consultants_order_consultant + $consultants_order_member;
 
-					// echo "<pre>";
-					// print_r($final_consultant_list);
-					// echo "</pre>";
-					// die("here");
-
-					// foreach ( $consultants_order as $consultant ) {
-					// 	if()
-					// }
-					
-					
-					// array_multisort( array_column($consultants_order, "membership_order"), SORT_ASC, $consultants_order );
-
-					//echo '<pre>'; print_r( $consultant_data ); echo '</pre>';
 					// empower-consultant = 8459, empower-professional = 8460, empower-master = 8461";
 			
 					foreach ( $final_consultant_list as $consultant ) {
 				
 						// Only show consultants with empower memberships
-						$allowed_memberships = array( 'empower-member', 'empower-consultant', 'empower-professional', 'empower-master' );
+						$allowed_memberships = array( 'certified-master-image-coach','certified-professional-image-consultant','certified-image-consultant','certified-4x4-color-consultant','empower-member', 'empower-consultant', 'empower-professional', 'empower-master' );
 							
 						if ( in_array($consultant['membership_plan'], $allowed_memberships, true ) ) {
 				
@@ -330,10 +354,6 @@ function rw_consultant_directory_shortcode( $atts ) {
 								continue;
 							}
 
-							
-						// 	echo "<pre>";
-						// print_r($consultant_state__province);
-						// echo "</pre>";
 							//$current_membership = wc_memberships_get_user_active_memberships($consultant->user_id);
 							if ($show_my_listing == "Yes") {
 							?>
@@ -353,15 +373,26 @@ function rw_consultant_directory_shortcode( $atts ) {
 	
 											<?php 
 											switch ($consultant['membership_plan']) {
-												
+												case "certified-master-image-coach":
+													echo '<img class="size-thumbnail wp-image-9510" src="https://byferial.com/wp-content/uploads/2023/05/Certified-Master-Image-Coach-Logo.png" alt="empower member" width="150" height="150" />';
+													break;
+												case "certified-professional-image-consultant":
+													echo '<img class="size-thumbnail wp-image-9510" src="https://byferial.com/wp-content/uploads/2023/05/Certified-Professional-Image-Consultant-Logo.png" alt="empower member" width="150" height="150" />';
+													break;
+												case "certified-image-consultant":
+													echo '<img class="size-thumbnail wp-image-9510" src="https://byferial.com/wp-content/uploads/2023/05/Certified-4X4-Color-Consultant.png" alt="empower member" width="150" height="150" />';
+													break;
+												case "certified-4x4-color-consultant":
+													echo '<img class="size-thumbnail wp-image-9510" src="https://byferial.com/wp-content/uploads/2023/05/4X4-Color-Consultant-Logo.png" alt="empower member" width="150" height="150" />';
+													break;
 												case "empower-member":
 													echo '<img class="size-thumbnail wp-image-9510" src="https://byferial.com/wp-content/uploads/2023/03/Social-Member-Logo.png" alt="empower member" width="150" height="150" />';
 													break;
 												case "empower-consultant":
-													echo '<img class="size-thumbnail wp-image-9508" src="https://byferial.com/wp-content/uploads/2020/07/empower-consultant-logo-150x150.png" alt="empower consultant" width="150" height="150" />';
+													echo '<img class="size-thumbnail wp-image-9508" src="https://byferial.com/wp-content/uploads/2023/02/Elite-Member-Logo.png" alt="empower consultant" width="150" height="150" />';
 													break;
 												case "empower-professional":
-													echo '<img class="size-thumbnail wp-image-9511" src="https://byferial.com/wp-content/uploads/2020/07/empower-professional-logo-150x150.png" alt="empower professional" width="150" height="150" />';
+													echo '<img class="size-thumbnail wp-image-9511" src="https://byferial.com/wp-content/uploads/2023/02/Skilled-Member-Logo.png" alt="empower professional" width="150" height="150" />';
 													break;
 												case "empower-master":										
 													echo '<img class="size-thumbnail wp-image-9509" src="https://byferial.com/wp-content/uploads/2023/03/Ambassador-Logo.png" alt="empower master" width="150" height="150" />';
@@ -417,8 +448,6 @@ function rw_consultant_directory_shortcode( $atts ) {
 			<?php
 			
 			$i++;
-			
-			// } // end foreach ( $member_countries as $country ) {
 			
 			?>
 		

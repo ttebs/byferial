@@ -884,3 +884,6 @@ ul.rw-5-columns li {
     border-radius: 3px;
     border: none;
 }
+.rw-consultant-directory .rw-consultant-card-header .rw-badge img {
+    width: 110px !important;
+}
